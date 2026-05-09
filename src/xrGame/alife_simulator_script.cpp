@@ -37,6 +37,19 @@ CALifeSimulator* alife()
 	return (const_cast<CALifeSimulator*>(ai().get_alife()));
 }
 
+// gcoop: pause/resume A-Life scheduled updates. When enabled (true), the engine's
+// shedule manager skips CALifeUpdateManager::shedule_Update — A-Life freezes.
+// Lua: alife_set_client_mode(true) on coop client; alife_set_client_mode(false) on host or SP.
+void alife_set_client_mode(bool enabled)
+{
+	CALifeUpdateManager::set_client_mode(enabled);
+}
+
+bool alife_is_client_mode()
+{
+	return CALifeUpdateManager::is_client_mode();
+}
+
 CSE_ALifeDynamicObject* alife_object(const CALifeSimulator* self, ALife::_OBJECT_ID object_id)
 {
 	VERIFY(self);
@@ -649,6 +662,9 @@ void CALifeSimulator::script_register(lua_State* L)
 		.def("max_id", &alife_max_id)
 
 		, def("alife", &alife)
+		// gcoop kill switch
+		, def("alife_set_client_mode", &alife_set_client_mode)
+		, def("alife_is_client_mode", &alife_is_client_mode)
 	];
 
 	{

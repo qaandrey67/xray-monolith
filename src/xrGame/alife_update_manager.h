@@ -41,12 +41,19 @@ protected:
 	virtual void reload(LPCSTR section);
 
 public:
+	// gcoop hook: when set to true, A-Life scheduled updates are skipped.
+	// Used on the coop client to suppress local simulation while host is authoritative.
+	// Exposed to Lua as a global `alife_set_client_mode(bool)`.
+	static bool s_client_mode_enabled;
+	static void set_client_mode(bool v) { s_client_mode_enabled = v; }
+	static bool is_client_mode() { return s_client_mode_enabled; }
+
 	CALifeUpdateManager(xrServer* server, LPCSTR section);
 	virtual ~CALifeUpdateManager();
 	virtual shared_str shedule_Name() const { return shared_str("alife_simulator"); };
 	virtual float shedule_Scale();
 	virtual void shedule_Update(u32 dt);
-	virtual bool shedule_Needed() { return true; };
+	virtual bool shedule_Needed() { return !s_client_mode_enabled; }; // gcoop kill switch
 	void update_switch();
 	void update_scheduled(bool init_ef = true);
 	void load(LPCSTR game_name = 0, bool no_assert = false, bool new_only = false);

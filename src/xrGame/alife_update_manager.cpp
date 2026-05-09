@@ -30,6 +30,10 @@ using namespace ALife;
 
 extern string_path g_last_saved_game;
 
+// gcoop: A-Life client-mode kill switch. Default off (host/SP behaviour).
+// Toggled from Lua via global `alife_set_client_mode(bool)`.
+bool CALifeUpdateManager::s_client_mode_enabled = false;
+
 class CSwitchPredicate
 {
 private:
