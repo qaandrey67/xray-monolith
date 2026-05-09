@@ -359,11 +359,17 @@ float CVisualMemoryManager::get_visible_value(const CGameObject* game_object, fl
 		return (current_state().m_visibility_threshold);
 
 	//Alundaio: hijack not_yet_visible_object to lua
+	// dtrail 00c1a321: null-check the lua_game_object() to avoid crash when either object lacks a script side
 	::luabind::functor<float> funct;
 	if (ai().script_engine().functor("visual_memory_manager.get_visible_value", funct))
-		return (funct(m_object ? m_object->lua_game_object() : 0, game_object ? game_object->lua_game_object() : 0,
-		              time_delta, current_state().m_time_quant, luminocity, current_state().m_velocity_factor,
-		              object_velocity, distance, object_distance, always_visible_distance));
+	{
+		CScriptGameObject* script_obj      = m_object    ? m_object->lua_game_object()    : 0;
+		CScriptGameObject* script_game_obj = game_object ? game_object->lua_game_object() : 0;
+		if (script_obj && script_game_obj)
+			return (funct(script_obj, script_game_obj,
+				time_delta, current_state().m_time_quant, luminocity, current_state().m_velocity_factor,
+				object_velocity, distance, object_distance, always_visible_distance));
+	}
 	//-Alundaio
 
 	return (

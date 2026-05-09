@@ -99,7 +99,12 @@ void CALifeUpdateManager::update_switch()
 
 	START_PROFILE("ALife/switch")
 		;
+		// dtrail 80950e7e: 2ms budget to stretch across frames and eliminate stutter
+		graph().set_process_time(2.0f);
+
 		graph().level().update(CSwitchPredicate(this), Device.dwPrecacheFrame > 0);
+
+		set_process_time((int)m_max_process_time);
 	STOP_PROFILE
 }
 
